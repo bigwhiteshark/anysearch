@@ -1,0 +1,5 @@
+packages:
+  # 放置后端服务
+  - backend
+  # 放置前端页面
+  - frontend
