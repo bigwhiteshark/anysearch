@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.14.0",
     "fetch-sse": "^1.0.23",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
