@@ -2,7 +2,7 @@ import { TModelInfo } from './types';
 
 export const Models: TModelInfo[] = [
   {
-    platform: 'qihu360',
+    platform: 'qihu',
     type: '',
     models: ['360gpt-pro'],
   },

@@ -1,12 +1,12 @@
 type TRagOptions = {
-  engine: SearchEngine;
+  engine: TSearchEngine;
   stream?: boolean;
   model?: string;
   locally?: boolean;
   provider?: Provider;
 };
 
-export enum SearchEngine {
+export enum TSearchEngine {
   GOOGLE = 'GOOGLE',
   BAIDU = 'BAIDU',
   BING = 'BING',

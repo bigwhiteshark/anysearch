@@ -14,11 +14,16 @@ const APIS = {
 export class AliyunChat implements BaseChat {
   private key?: string;
   platform = 'aliyun';
-  public async chat?(
+
+  constructor() {
+    this.key = process.env.ALIYUN_KEY;
+  }
+
+  public async chat(
     messages: TChatInputMessage[],
-    model?: string,
+    model: string,
     system?: string
-  ): Promise<string | undefined> {
+  ) {
     if (system) {
       messages = [
         {
@@ -28,42 +33,90 @@ export class AliyunChat implements BaseChat {
         ...messages,
       ];
     }
-    const input = {
-      messages,
+    const options = {
+      input: {
+        messages,
+      },
     };
-
     const url = `${BaseURL}${APIS.qwen}`;
-    const payload = {
+    const payload = JSON.stringify({
       model,
-      input,
-    };
-
+      input: options.input
+    });
     const res = await httpRequest({
-      method: 'POST',
       url,
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${this.key}`,
+        'Authorization': `Bearer ${this.key}`
       },
-      data: JSON.stringify(payload),
+      data: payload
     });
-
     const data = await res.json();
     if (data?.message) {
       console.error(data);
       throw new Error(data.message ?? 'bad request.');
     }
-
     return data.output.text;
   }
 
-  chatStream(
+  public async chatStream(
     messages: TChatInputMessage[],
     onMessage: TStreamHandler,
-    model?: string,
+    model: string,
     system?: string
   ): Promise<void> {
-    throw new Error('Method not implemented.');
+    if (system) {
+      messages = [
+        {
+          role: 'system',
+          content: system,
+        },
+        ...messages,
+      ];
+    }
+    const options = {
+      input: {
+        messages,
+      }
+    };
+    const url = `${BaseURL}${APIS.qwen}`;
+    const payload = {
+      model,
+      input: options.input,
+      parameters: {
+        incremental_output: true
+      }
+    };
+    const abort = new AbortController();
+    const key = this.key;
+    try {
+      await fetchEventData(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${key}`,
+          'Content-Type': 'application/json'
+        },
+        data: payload,
+        signal: abort.signal,
+        onMessage: (eventData) => {
+          const data = eventData?.data;
+          try {
+            const result = JSON.parse(data || '{}');
+            const msg = result.output?.text ?? '';
+            onMessage(msg, false);
+          } catch (error) {
+            console.error('Aliyun onMessage Error: ', error);
+          }
+        },
+        onClose: () => {
+          onMessage(null, false);
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      abort.abort();
+    }
   }
 }
 

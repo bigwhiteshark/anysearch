@@ -1,4 +1,4 @@
-import { TChatInputMessage, TStreamHandler } from './../types/chat.d';
+import { TChatInputMessage, TStreamHandler } from '../types';
 export abstract class BaseChat {
   platform?: string;
   abstract chat?(

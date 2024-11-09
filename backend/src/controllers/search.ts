@@ -1,11 +1,11 @@
 import { Context } from 'koa';
 import { Rag } from '../services/rag';
-import { SearchEngine } from '../types';
+import { TSearchEngine } from '../types';
 
 interface SearchRequestBody {
   model: string;
   reload: boolean;
-  engine: SearchEngine;
+  engine: TSearchEngine;
   categoriesa: string;
   mode: string;
   language: string;
@@ -17,6 +17,7 @@ export const searchController = async (ctx: Context) => {
   const { request } = ctx;
   const { query, body } = request;
   const { q } = query;
+  console.log('q==>', q)
   const {
     model,
     reload,

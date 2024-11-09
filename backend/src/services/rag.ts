@@ -24,7 +24,7 @@ export class Rag {
     console.info('[query with local llm]:', locally);
   }
 
-  async query(
+  public async query(
     query: string,
     categories = [],
     mode: TMode = 'simple',
